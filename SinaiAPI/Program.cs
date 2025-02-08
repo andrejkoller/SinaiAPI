@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using SinaiAPI;
+using SinaiAPI.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,16 +8,17 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAngular",
+    options.AddPolicy("AllowAlways",
         policy =>
         {
-            policy.WithOrigins("https://localhost:4200")
+            policy.AllowAnyOrigin()
             .AllowAnyMethod()
             .AllowAnyHeader();
         });
 });
 
 builder.Services.AddControllers();
+builder.Services.AddScoped<DepartmentService>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -33,7 +35,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseCors("AllowAngular");
+app.UseCors("AllowAlways");
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
