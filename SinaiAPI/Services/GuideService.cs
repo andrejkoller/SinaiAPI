@@ -51,5 +51,20 @@ namespace SinaiAPI.Services
 
             return true;
         }
+
+        public void UpdateGuide(int id, Guide updatedGuide)
+        {
+            var guide = _context.Guides.SingleOrDefault(x => x.Id == id);
+
+            if (guide == null)
+            {
+                throw new KeyNotFoundException($"Guide with ID {id} not found.");
+            }
+
+            guide.Title = updatedGuide.Title;
+            guide.Description = updatedGuide.Description;
+
+            _context.SaveChanges();
+        }
     }
 }

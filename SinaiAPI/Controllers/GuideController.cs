@@ -22,6 +22,13 @@ namespace SinaiAPI.Controllers
             return guides == null ? NotFound() : Ok(guides);
         }
 
+        [HttpGet("{id}")]
+        public IActionResult GetId(int id)
+        {
+            var guide = _guideService.GetGuide(id);
+            return guide == null ? NotFound() : Ok(guide);
+        }
+
         [HttpPost("post")]
         public IActionResult Post([FromBody] Guide guide)
         {
@@ -44,6 +51,18 @@ namespace SinaiAPI.Controllers
             }
 
             return NoContent();
+        }
+
+        [HttpPut("put/{id}")]
+        public IActionResult Update(int id, [FromBody] Guide guide)
+        {
+            if (guide == null)
+            {
+                return BadRequest();
+            }
+
+            _guideService.UpdateGuide(id, guide);
+            return Ok(guide);
         }
     }
 }

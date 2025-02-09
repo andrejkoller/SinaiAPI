@@ -25,8 +25,8 @@ namespace SinaiAPI.Controllers
         [HttpGet("{id}")]
         public IActionResult GetId(int id)
         {
-            var departmentId = _departmentService.GetDepartment(id);
-            return departmentId == null ? NotFound() : Ok(departmentId);
+            var department = _departmentService.GetDepartment(id);
+            return department == null ? NotFound() : Ok(department);
         }
 
         [HttpPost("post")]
@@ -52,6 +52,18 @@ namespace SinaiAPI.Controllers
             }
 
             return NoContent();
+        }
+
+        [HttpPut("put/{id}")]
+        public IActionResult Update(int id, [FromBody] Department department)
+        {
+            if (department == null)
+            {
+                return BadRequest();
+            }
+
+            _departmentService.UpdateDepartment(id, department);
+            return Ok(department);
         }
     }
 }

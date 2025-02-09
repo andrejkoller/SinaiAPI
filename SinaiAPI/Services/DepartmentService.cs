@@ -56,5 +56,22 @@ namespace SinaiAPI.Services
 
             return true;
         }
+
+        public void UpdateDepartment(int id, Department updateDepartment)
+        {
+            var department = _context.Departments.SingleOrDefault(x => x.Id == id);
+
+            if (department == null)
+            {
+                throw new KeyNotFoundException($"Department with ID {id} not found.");
+            }
+
+            department.Floor = updateDepartment.Floor;
+            department.Name = updateDepartment.Name;
+            department.Amount = updateDepartment.Amount;
+            department.Description = updateDepartment.Description;
+
+            _context.SaveChanges();
+        }
     }
 }
