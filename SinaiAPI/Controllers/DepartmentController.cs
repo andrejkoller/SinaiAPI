@@ -41,7 +41,7 @@ namespace SinaiAPI.Controllers
             return Ok();
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("delete/{id}")]
         public IActionResult Delete(int id)
         { 
             bool isDeleted = _departmentService.DeleteDepartment(id);

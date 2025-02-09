@@ -10,12 +10,14 @@ namespace SinaiAPI
         public SinaiDbContext(DbContextOptions<SinaiDbContext> options) : base(options) { }
 
         public DbSet<Department> Departments { get; set; }
+        public DbSet<Guide> Guides { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.Entity<Department>().ToTable("Departments");
+            modelBuilder.Entity<Guide>().ToTable("Guides");
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) {

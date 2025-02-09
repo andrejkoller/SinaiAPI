@@ -18,7 +18,7 @@ namespace SinaiAPI.Services
 
         public Department? GetDepartment(int id)
         {
-            return _context.Departments.FirstOrDefault(x => x.Id == id);
+            return _context.Departments.SingleOrDefault(x => x.Id == id);
         }
 
         public void PostDepartment(Department department)
@@ -44,7 +44,7 @@ namespace SinaiAPI.Services
 
         public bool DeleteDepartment(int id)
         {
-            var department = _context.Departments.FirstOrDefault(x => x.Id == id);
+            var department = _context.Departments.SingleOrDefault(x => x.Id == id);
 
             if (department == null)
             {
