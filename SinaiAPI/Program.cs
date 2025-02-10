@@ -26,6 +26,7 @@ builder.Services.AddScoped<DepartmentService>();
 builder.Services.AddScoped<GuideService>();
 builder.Services.AddScoped<WorkplaceService>();
 builder.Services.AddScoped<AuthService>();
+builder.Services.AddScoped<UserService>();
 builder.Services.AddEndpointsApiExplorer();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");

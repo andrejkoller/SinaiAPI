@@ -32,14 +32,18 @@ namespace SinaiAPI.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDTO request)
         {
-            var token = await _authService.Login(request);
+            var result = await _authService.Login(request);
 
-            if (token == null)
+            if (result == null)
             {
                 return Unauthorized(new { error = "Invalid username or password" });
             }
 
-            return Ok(new { token });
+            return Ok(new 
+            { 
+                token = result.Value.token, 
+                user = result.Value.user
+            });
         }
     }
 }

@@ -49,7 +49,7 @@ namespace SinaiAPI.Services
             return user;
         }
 
-        public async Task<string?> Login(LoginDTO request)
+        public async Task<(string token, object user)?> Login(LoginDTO request)
         {
             var user = await _context.Users.SingleOrDefaultAsync(x => x.Username == request.Username);
 
@@ -58,7 +58,9 @@ namespace SinaiAPI.Services
                 return null;
             }
 
-            return GenerateJwtToken(user);
+            string token = GenerateJwtToken(user);
+
+            return ( token, new { id = user.Id, user.Username, user.Role });
         }
 
         private string GenerateJwtToken(User user)
