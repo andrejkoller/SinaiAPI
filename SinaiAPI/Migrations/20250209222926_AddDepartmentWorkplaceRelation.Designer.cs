@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SinaiAPI;
 
@@ -10,9 +11,11 @@ using SinaiAPI;
 namespace SinaiAPI.Migrations
 {
     [DbContext(typeof(SinaiDbContext))]
-    partial class SinaiDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250209222926_AddDepartmentWorkplaceRelation")]
+    partial class AddDepartmentWorkplaceRelation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

@@ -11,6 +11,7 @@ namespace SinaiAPI
 
         public DbSet<Department> Departments { get; set; }
         public DbSet<Guide> Guides { get; set; }
+        public DbSet<Workplace> Workplaces { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -18,6 +19,12 @@ namespace SinaiAPI
 
             modelBuilder.Entity<Department>().ToTable("Departments");
             modelBuilder.Entity<Guide>().ToTable("Guides");
+            modelBuilder.Entity<Workplace>()
+                .ToTable("Workplaces")
+                .HasOne(w => w.Department)
+                .WithMany(d => d.Workplaces)
+                .HasForeignKey(w => w.DepartmentId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) {

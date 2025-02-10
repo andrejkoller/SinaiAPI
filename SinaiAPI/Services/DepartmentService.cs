@@ -1,4 +1,5 @@
-﻿using SinaiAPI.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using SinaiAPI.Models;
 
 namespace SinaiAPI.Services
 {
@@ -18,7 +19,9 @@ namespace SinaiAPI.Services
 
         public Department? GetDepartment(int id)
         {
-            return _context.Departments.SingleOrDefault(x => x.Id == id);
+            return _context.Departments
+                .Include(d => d.Workplaces)
+                .SingleOrDefault(x => x.Id == id);
         }
 
         public void PostDepartment(Department department)
