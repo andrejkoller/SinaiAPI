@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using SinaiAPI.Models;
 using SinaiAPI.Services;
 
 namespace SinaiAPI.Controllers
@@ -33,6 +34,43 @@ namespace SinaiAPI.Controllers
             }
 
             return Ok(workplaces);
+        }
+
+        [HttpPost("post")]
+        public IActionResult Post([FromBody] Workplace workplace)
+        {
+            if (workplace == null)
+            {
+                return BadRequest();
+            }
+
+            _workplaceService.PostWorkplace(workplace);
+            return Ok();
+        }
+
+        [HttpDelete("delete/{id}")]
+        public IActionResult Delete(int id)
+        {
+            bool isDeleted = _workplaceService.DeleteWorkplace(id);
+
+            if (!isDeleted)
+            {
+                return NotFound($"Department with ID {id} not found.");
+            }
+
+            return NoContent();
+        }
+
+        [HttpPut("put/{id}")]
+        public IActionResult Update(int id, [FromBody] Workplace workplace)
+        {
+            if (workplace == null)
+            {
+                return BadRequest();
+            }
+
+            _workplaceService.UpdateWorkplace(id, workplace);
+            return Ok(workplace);
         }
     }
 }
