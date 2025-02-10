@@ -25,6 +25,11 @@ namespace SinaiAPI.Services
                 .ToList();
         }
 
+        public Workplace? GetWorkplace(int id)
+        {
+            return _context.Workplaces.SingleOrDefault(x => x.Id == id);
+        }
+
         public void PostWorkplace(Workplace workplace)
         {
             if (workplace == null)
@@ -70,6 +75,7 @@ namespace SinaiAPI.Services
 
             workplace.Name = updateWorkplace.Name;
             workplace.DepartmentId = updateWorkplace.DepartmentId;
+            workplace.Status = updateWorkplace.Status;
 
             _context.SaveChanges();
         }

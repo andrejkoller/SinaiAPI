@@ -23,7 +23,7 @@ namespace SinaiAPI.Controllers
             return workplaces == null ? NotFound() : Ok(workplaces);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("department/{id}")]
         public IActionResult GetBWorkplacesyDepartment(int id)
         {
             var workplaces = _workplaceService.GetWorkplacesByDepartment(id);
@@ -34,6 +34,13 @@ namespace SinaiAPI.Controllers
             }
 
             return Ok(workplaces);
+        }
+
+        [HttpGet("{id}")]
+        public IActionResult GetId(int id)
+        {
+            var workplace = _workplaceService.GetWorkplace(id);
+            return workplace == null ? NotFound() : Ok(workplace);
         }
 
         [HttpPost("post")]

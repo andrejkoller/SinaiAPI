@@ -25,6 +25,7 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 builder.Services.AddScoped<DepartmentService>();
 builder.Services.AddScoped<GuideService>();
 builder.Services.AddScoped<WorkplaceService>();
+builder.Services.AddScoped<AuthService>();
 builder.Services.AddEndpointsApiExplorer();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
