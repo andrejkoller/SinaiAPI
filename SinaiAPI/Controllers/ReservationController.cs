@@ -33,13 +33,13 @@ namespace SinaiAPI.Controllers
         }
 
         [HttpPost("post")]
-        public IActionResult Post(int userId, int workplaceId, [FromBody] Reservation reservation)
+        public IActionResult Post([FromBody] Reservation reservation)
         {
             if (reservation == null)
             {
                 return BadRequest();
             }
-            _reservationService.PostReservation(userId, workplaceId, reservation);
+            _reservationService.PostReservation(reservation);
             return Ok();
         }
 

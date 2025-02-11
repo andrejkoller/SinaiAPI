@@ -22,38 +22,31 @@ namespace SinaiAPI.Services
             return _context.Reservations.SingleOrDefault(x => x.Id == id);
         }
 
-        public void PostReservation(int UserId, int workplaceId, Reservation reservation)
+        public void PostReservation(Reservation reservation)
         {
             if (reservation == null)
             {
-                throw new ArgumentException(nameof(reservation));
-            }
-
-            var workplace = _context.Workplaces.SingleOrDefault(x => x.Id == workplaceId);
-
-            if (workplace == null)
-            {
-                throw new KeyNotFoundException($"Workplace with {workplaceId} not found");
-            }
-
-            var user = _context.Users.SingleOrDefault(x => x.Id == UserId);
-
-            if (user == null)
-            {
-                throw new KeyNotFoundException($"User with {UserId} not found");
+                throw new ArgumentNullException(nameof(reservation), "Reservation cannot be null");
             }
 
             var reservationModel = new Reservation
             {
-                UserId = UserId,
+                UserId = reservation.UserId,
                 StartTime = reservation.StartTime,
                 EndTime = reservation.EndTime,
-                WorkplaceId = workplaceId,
+                WorkplaceId = reservation.WorkplaceId,
                 Status = Reservation.ReservationStatus.Reserved
             };
 
-            _context.Reservations.Add(reservationModel);
-            _context.SaveChanges();
+            try
+            {
+                _context.Reservations.Add(reservationModel);
+                _context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException("Failed to save the reservation", ex);
+            }
         }
 
         public bool DeleteReservation(int id)
