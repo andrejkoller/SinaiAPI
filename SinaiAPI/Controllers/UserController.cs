@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SinaiAPI.Models;
 using SinaiAPI.Services;
 
@@ -6,15 +7,28 @@ namespace SinaiAPI.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class UserController : Controller
+    public class UserController : BaseController
     {
         private readonly UserService _userService;
-        public UserController(UserService userService)
+        public UserController(UserService userService) : base(userService)
         {
             _userService = userService;
         }
 
         [HttpGet]
+        public async Task<IActionResult> GetCurrentUser()
+        {
+            var user = await GetCurrentUser();
+
+            if (user == null)
+            {
+                return Unauthorized("User not found or not authenticated.");
+            }
+
+            return Ok(user);
+        }
+
+        [HttpGet("users")]
         public IActionResult Get()
         {
             var users = _userService.GetUsers();

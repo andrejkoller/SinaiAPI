@@ -20,5 +20,7 @@ namespace SinaiAPI.Models
             Admin,
             User
         }
+
+        public ICollection<Reservation>? Reservations { get; set; } = new List<Reservation>();
     }
 }

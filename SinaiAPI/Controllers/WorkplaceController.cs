@@ -1,18 +1,18 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SinaiAPI.Models;
 using SinaiAPI.Services;
 
 namespace SinaiAPI.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
-    public class WorkplaceController : Controller
+    public class WorkplaceController : BaseController
     {
-        private readonly DepartmentService _departmentService;
         private readonly WorkplaceService _workplaceService;
 
-        public WorkplaceController(DepartmentService departmentService, WorkplaceService workplaceService) {
-            _departmentService = departmentService;
+        public WorkplaceController(WorkplaceService workplaceService, UserService userService) : base(userService) {
             _workplaceService = workplaceService;
         }
 

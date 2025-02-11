@@ -1,16 +1,19 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SinaiAPI.Models;
 using SinaiAPI.Services;
 
 namespace SinaiAPI.Controllers
 {
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [ApiController]
     [Route("api/[controller]")]
-    public class DepartmentController : Controller
+    public class DepartmentController : BaseController
     {
         private readonly DepartmentService _departmentService;
 
-        public DepartmentController(DepartmentService departmentService)
+        public DepartmentController(DepartmentService departmentService, UserService userService) : base(userService)
         {
             _departmentService = departmentService;
         }

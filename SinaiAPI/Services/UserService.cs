@@ -1,4 +1,5 @@
-﻿using SinaiAPI.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using SinaiAPI.Models;
 
 namespace SinaiAPI.Services
 {
@@ -11,14 +12,14 @@ namespace SinaiAPI.Services
             _context = context;
         }
 
-        public IQueryable<User> GetUsers()
-        {
-            return _context.Users;
-        }
-
         public User? GetUser(int id)
         {
             return _context.Users.SingleOrDefault(x => x.Id == id);
+        }
+
+        public IQueryable<User> GetUsers()
+        {
+            return _context.Users;
         }
 
         public void PostUser(User user)

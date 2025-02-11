@@ -1,6 +1,9 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using SinaiAPI;
 using SinaiAPI.Services;
+using System.Text;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -17,6 +20,19 @@ builder.Services.AddCors(options =>
             .AllowAnyHeader();
         });
 });
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = false,
+            ValidateAudience = false,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("aksjflsjflsdkafjsdofjsdljfasdflkj"))
+        };
+    });
+builder.Services.AddAuthorization();
 
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
@@ -27,6 +43,7 @@ builder.Services.AddScoped<GuideService>();
 builder.Services.AddScoped<WorkplaceService>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<ReservationService>();
 builder.Services.AddEndpointsApiExplorer();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
@@ -38,6 +55,7 @@ var app = builder.Build();
 app.UseCors("AllowAlways");
 app.UseHttpsRedirection();
 app.UseDeveloperExceptionPage();
+app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 app.Run();
