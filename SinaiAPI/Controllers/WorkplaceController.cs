@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using SinaiAPI.Models;
 using SinaiAPI.Services;
 
@@ -19,7 +20,9 @@ namespace SinaiAPI.Controllers
         [HttpGet]
         public IActionResult Get()
         {
-            var workplaces = _workplaceService.GetWorkplaces();
+            var workplaces = _workplaceService.GetWorkplaces()
+                .Include(d => d.Department);
+
             return workplaces == null ? NotFound() : Ok(workplaces);
         }
 

@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using SinaiAPI;
+using SinaiAPI.Converters;
 using SinaiAPI.Services;
 using System.Text;
 using System.Text.Json.Serialization;
@@ -33,10 +34,10 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 builder.Services.AddAuthorization();
-
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
     options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+    options.JsonSerializerOptions.Converters.Add(new DateTimeConverter());
 });
 builder.Services.AddScoped<DepartmentService>();
 builder.Services.AddScoped<GuideService>();
@@ -45,7 +46,6 @@ builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<ReservationService>();
 builder.Services.AddEndpointsApiExplorer();
-
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<SinaiDbContext>(options =>
     options.UseSqlServer(connectionString));

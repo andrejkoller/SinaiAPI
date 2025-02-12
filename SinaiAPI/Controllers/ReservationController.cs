@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using SinaiAPI.Models;
 using SinaiAPI.Services;
 
@@ -21,7 +22,11 @@ namespace SinaiAPI.Controllers
         [HttpGet]
         public IActionResult Get()
         {
-            var reservations = _reservationService.GetReservations();
+            var reservations = _reservationService.GetReservations()
+                .Include(r => r.Workplace)
+                .Include(u => u.User)
+                .ToList();
+
             return reservations == null ? NotFound() : Ok(reservations);
         }
 
