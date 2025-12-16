@@ -9,19 +9,12 @@ namespace SinaiAPI.Controllers
     [Authorize]
     [ApiController]
     [Route("api/[controller]")]
-    public class ReservationController : BaseController
+    public class ReservationController(ReservationService reservationService, UserService userService) : BaseController(userService)
     {
-        private readonly ReservationService _reservationService;
-
-        public ReservationController(ReservationService reservationService, UserService userService) : base(userService)
-        {
-            _reservationService = reservationService;
-        }
-
         [HttpGet]
         public IActionResult Get()
         {
-            var reservations = _reservationService.GetReservations()
+            var reservations = reservationService.GetReservations()
                 .Include(r => r.Workplace)
                 .ThenInclude(d => d.Department)
                 .Include(u => u.User);
@@ -32,7 +25,7 @@ namespace SinaiAPI.Controllers
         [HttpGet("currentUser")]
         public IActionResult GetCurrentUser()
         {
-            var reservations = _reservationService.GetCurrentUserReservations()
+            var reservations = reservationService.GetCurrentUserReservations()
                 .Include(w => w.Workplace)
                 .ThenInclude(d => d.Department)
                 .Where(u => u.UserId == CurrentUser.Id);
@@ -43,43 +36,45 @@ namespace SinaiAPI.Controllers
         [HttpGet("{id}")]
         public IActionResult GetId(int id)
         {
-            var reservation = _reservationService.GetReservation(id);
+            var reservation = reservationService.GetReservation(id);
             return reservation == null ? NotFound() : Ok(reservation);
         }
 
         [HttpPost("post")]
         public IActionResult Post([FromBody] Reservation reservation)
         {
-            if (reservation == null)
+            if (reservation != null)
             {
-                return BadRequest();
+                reservationService.PostReservation(reservation);
+                return Ok();
             }
-            _reservationService.PostReservation(reservation);
-            return Ok();
+
+            return BadRequest();
         }
 
         [HttpDelete("delete/{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var isDeleted = await _reservationService.DeleteReservation(id);
+            var isDeleted = await reservationService.DeleteReservation(id);
 
-            if (!isDeleted)
+            if (isDeleted)
             {
-                return NotFound($"Reservation with ID {id} not found.");
+                return NoContent();
             }
 
-            return NoContent();
+            return NotFound($"Reservation with ID {id} not found.");
         }
 
         [HttpPut("put/{id}")]
         public IActionResult Update(int id, [FromBody] Reservation reservation)
         {
-            if (reservation == null)
+            if (reservation != null)
             {
-                return BadRequest();
+                reservationService.UpdateReservation(id, reservation);
+                return Ok(reservation);
             }
-            _reservationService.UpdateReservation(id, reservation);
-            return Ok(reservation);
+
+            return BadRequest();
         }
     }
 }

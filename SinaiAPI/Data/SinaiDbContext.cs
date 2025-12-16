@@ -3,14 +3,14 @@
 using Microsoft.EntityFrameworkCore;
 using SinaiAPI.Models;
 
-namespace SinaiAPI
+namespace SinaiAPI.Data
 {
     public class SinaiDbContext : DbContext
     {
         public SinaiDbContext(DbContextOptions<SinaiDbContext> options) : base(options) { }
 
         public DbSet<Department> Departments { get; set; }
-        public DbSet<Guide> Guides { get; set; }
+        public DbSet<FAQ> FAQs { get; set; }
         public DbSet<Workplace> Workplaces { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<Reservation> Reservations { get; set; }
@@ -20,7 +20,7 @@ namespace SinaiAPI
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.Entity<Department>().ToTable("Departments");
-            modelBuilder.Entity<Guide>().ToTable("Guides");
+            modelBuilder.Entity<FAQ>().ToTable("Guides");
             modelBuilder.Entity<Workplace>()
                 .ToTable("Workplaces")
                 .HasOne(w => w.Department)

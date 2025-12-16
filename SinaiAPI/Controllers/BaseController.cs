@@ -5,10 +5,8 @@ using System.Security.Claims;
 
 namespace SinaiAPI.Controllers
 {
-    public abstract class BaseController : Controller
+    public abstract class BaseController(UserService userService) : Controller
     {
-        protected readonly UserService _userService;
-
         protected User? CurrentUser
         {
             get
@@ -20,13 +18,8 @@ namespace SinaiAPI.Controllers
                     return null;
                 }
 
-                return _userService.GetUser(id);
+                return userService.GetUser(id);
             }
-        }
-
-        protected BaseController(UserService userService)
-        {
-            _userService = userService;
         }
     }
 

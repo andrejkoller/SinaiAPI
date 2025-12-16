@@ -1,77 +1,65 @@
-﻿using SinaiAPI.Models;
+﻿using SinaiAPI.Data;
+using SinaiAPI.Models;
 
 namespace SinaiAPI.Services
 {
-    public class UserService
+    public class UserService(SinaiDbContext context)
     {
-        private readonly SinaiDbContext _context;
-
-        public UserService(SinaiDbContext context)
-        {
-            _context = context;
-        }
-
         public User? GetUser(int id)
         {
-            return _context.Users.SingleOrDefault(x => x.Id == id);
+            return context.Users.SingleOrDefault(x => x.Id == id);
         }
 
         public IQueryable<User> GetUsers()
         {
-            return _context.Users;
+            return context.Users;
         }
 
         public void PostUser(User user)
         {
-            if (user == null)
+            if (user != null)
+            {
+                string passwordHash = BCrypt.Net.BCrypt.HashPassword(user.Password);
+
+                var userModel = new User
+                {
+                    Email = user.Email,
+                    Username = user.Username,
+                    Password = passwordHash,
+                    Role = User.RoleType.User,
+                };
+
+                context.Users.Add(userModel);
+                context.SaveChanges();
+            }
+            else
             {
                 throw new ArgumentException(nameof(user));
             }
-
-            string passwordHash = BCrypt.Net.BCrypt.HashPassword(user.Password);
-
-            var userModel = new User
-            {
-                Email = user.Email,
-                Username = user.Username,
-                Password = passwordHash,
-                Role = User.RoleType.User,
-            };
-
-            _context.Users.Add(userModel);
-            _context.SaveChanges();
         }
 
         public bool DeleteUser(int id)
         {
-            var user = _context.Users.SingleOrDefault(x => x.Id == id);
+            var user = context.Users.SingleOrDefault(x => x.Id == id) 
+                ?? throw new KeyNotFoundException("User not found");
 
-            if (user == null)
-            {
-                throw new KeyNotFoundException("User not found");
-            }
-
-            _context.Remove(user);
-            _context.SaveChanges();
+            context.Remove(user);
+            context.SaveChanges();
 
             return true;
         }
 
         public void UpdateUser(int id, User updateUser)
         {
-            var user = _context.Users.SingleOrDefault(x => x.Id == id);
-
-            if (user == null)
-            {
-                throw new KeyNotFoundException($"User with ID {id} not found.");
-            }
+            var user = context.Users.SingleOrDefault(x => x.Id == id)
+                ?? throw new KeyNotFoundException($"User with ID {id} not found.");
 
             user.Email = updateUser.Email;
             user.Username = updateUser.Username;
             user.Password = updateUser.Password;
             user.Role = updateUser.Role;
 
-            _context.SaveChanges();
+            context.SaveChanges();
         }
     }
 }

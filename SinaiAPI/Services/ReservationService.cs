@@ -1,33 +1,25 @@
 ﻿using Microsoft.AspNetCore.SignalR;
+using SinaiAPI.Data;
 using SinaiAPI.Hubs;
 using SinaiAPI.Models;
 
 namespace SinaiAPI.Services
 {
-    public class ReservationService
+    public class ReservationService(SinaiDbContext context, IHubContext<ReservationHub> hubContext)
     {
-        private readonly SinaiDbContext _context;
-        private readonly IHubContext<ReservationHub> _hubContext;
-
-        public ReservationService(SinaiDbContext context, IHubContext<ReservationHub> hubContext)
-        {
-            _context = context;
-            _hubContext = hubContext;
-        }
-
         public IQueryable<Reservation> GetReservations()
         {
-            return _context.Reservations;
+            return context.Reservations;
         }
 
         public IQueryable<Reservation> GetCurrentUserReservations()
         {
-            return _context.Reservations;
+            return context.Reservations;
         }
 
         public Reservation? GetReservation(int id)
         {
-            return _context.Reservations.SingleOrDefault(x => x.Id == id);
+            return context.Reservations.SingleOrDefault(x => x.Id == id);
         }
 
         public async void PostReservation(Reservation reservation)
@@ -48,9 +40,9 @@ namespace SinaiAPI.Services
 
             try
             {
-                _context.Reservations.Add(reservationModel);
-                _context.SaveChanges();
-                await _hubContext.Clients.All.SendAsync("ReceiveReservationUpdate", reservation);
+                context.Reservations.Add(reservationModel);
+                context.SaveChanges();
+                await hubContext.Clients.All.SendAsync("ReceiveReservationUpdate", reservation);
             }
             catch (Exception ex)
             {
@@ -60,32 +52,25 @@ namespace SinaiAPI.Services
 
         public async Task<bool> DeleteReservation(int id)
         {
-            var reservation = _context.Reservations.SingleOrDefault(x => x.Id == id);
+            var reservation = context.Reservations.SingleOrDefault(x => x.Id == id)
+                ?? throw new KeyNotFoundException($"Reservation with {id} not found");
 
-            if (reservation == null)
-            {
-                throw new KeyNotFoundException($"Reservation with {id} not found");
-            }
-
-            _context.Remove(reservation);
-            _context.SaveChanges();
-            await _hubContext.Clients.All.SendAsync("ReceiveReservationUpdate", reservation);
+            context.Remove(reservation);
+            context.SaveChanges();
+            await hubContext.Clients.All.SendAsync("ReceiveReservationUpdate", reservation);
 
             return true;
         }
 
         public void UpdateReservation(int id, Reservation updateReservation)
         {
-            var reservation = _context.Reservations.SingleOrDefault(x => x.Id == id);
-            if (reservation == null)
-            {
-                throw new KeyNotFoundException($"Reservation with {id} not found");
-            }
+            var reservation = context.Reservations.SingleOrDefault(x => x.Id == id)
+                ?? throw new KeyNotFoundException($"Reservation with {id} not found");
 
             reservation.StartTime = updateReservation.StartTime;
             reservation.EndTime = updateReservation.EndTime;
 
-            _context.SaveChanges();
+            context.SaveChanges();
         }
     }
 }

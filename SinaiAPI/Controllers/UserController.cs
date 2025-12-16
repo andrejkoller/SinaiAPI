@@ -6,76 +6,70 @@ namespace SinaiAPI.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class UserController : BaseController
+    public class UserController(UserService userService) : BaseController(userService)
     {
-        private readonly UserService _userService;
-        public UserController(UserService userService) : base(userService)
-        {
-            _userService = userService;
-        }
-
         [HttpGet]
         public async Task<IActionResult> GetCurrentUser()
         {
             var user = await GetCurrentUser();
 
-            if (user == null)
+            if (user != null)
             {
-                return Unauthorized("User not found or not authenticated.");
+                return Ok(user);
             }
 
-            return Ok(user);
+            return Unauthorized("User not found or not authenticated.");
         }
 
         [HttpGet("users")]
         public IActionResult Get()
         {
-            var users = _userService.GetUsers();
+            var users = userService.GetUsers();
             return users == null ? NotFound() : Ok(users);
         }
 
         [HttpGet("{id}")]
         public IActionResult GetId(int id)
         {
-            var user = _userService.GetUser(id);
+            var user = userService.GetUser(id);
             return user == null ? NotFound() : Ok(user);
         }
 
         [HttpPost("post")]
         public IActionResult Post([FromBody] User user)
         {
-            if (user == null)
+            if (user != null)
             {
-                return BadRequest();
+                userService.PostUser(user);
+                return Ok();
             }
 
-            _userService.PostUser(user);
-            return Ok();
+            return BadRequest();
         }
 
         [HttpDelete("delete/{id}")]
         public IActionResult Delete(int id)
         {
-            bool isDeleted = _userService.DeleteUser(id);
+            bool isDeleted = userService.DeleteUser(id);
 
-            if (!isDeleted)
+            if (isDeleted)
             {
-                return NotFound($"User with Id {id} not found.");
+                return NoContent();
             }
 
-            return NoContent();
+            return NotFound($"User with Id {id} not found.");
         }
 
         [HttpPut("put/{id}")]
         public IActionResult Update(int id, [FromBody] User user)
         {
-            if (user == null)
+            if (user != null)
             {
-                return BadRequest();
+                userService.UpdateUser(id, user);
+                return Ok();
             }
 
-            _userService.UpdateUser(id, user);
-            return Ok();
+            return BadRequest();
         }
     }
 }

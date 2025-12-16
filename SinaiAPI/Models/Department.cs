@@ -19,6 +19,6 @@ namespace SinaiAPI.Models
             Reserved,
             Blocked
         }
-        public ICollection<Workplace>? Workplaces { get; set; } = new List<Workplace>();
+        public ICollection<Workplace>? Workplaces { get; set; } = [];
     }
 }

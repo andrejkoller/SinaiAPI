@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using SinaiAPI;
 using SinaiAPI.Converters;
+using SinaiAPI.Data;
 using SinaiAPI.Hubs;
 using SinaiAPI.Services;
 using System.Text;
@@ -44,7 +44,7 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 });
 
 builder.Services.AddScoped<DepartmentService>();
-builder.Services.AddScoped<GuideService>();
+builder.Services.AddScoped<FAQService>();
 builder.Services.AddScoped<WorkplaceService>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<UserService>();

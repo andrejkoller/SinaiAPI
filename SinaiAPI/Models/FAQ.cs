@@ -2,7 +2,7 @@
 
 namespace SinaiAPI.Models
 {
-    public class Guide
+    public class FAQ
     {
         public int Id { get; set; }
         public string? Title { get; set; }

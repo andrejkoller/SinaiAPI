@@ -21,6 +21,6 @@ namespace SinaiAPI.Models
             User
         }
 
-        public ICollection<Reservation>? Reservations { get; set; } = new List<Reservation>();
+        public ICollection<Reservation>? Reservations { get; set; } = [];
     }
 }

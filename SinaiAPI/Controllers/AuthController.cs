@@ -8,21 +8,14 @@ namespace SinaiAPI.Controllers
     [AllowAnonymous]
     [ApiController]
     [Route("api/[controller]")]
-    public class AuthController : Controller
+    public class AuthController(AuthService authService) : Controller
     {
-        private readonly AuthService _authService;
-
-        public AuthController(AuthService authService)
-        {
-            _authService = authService;
-        }
-
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterDTO request)
         {
             try
             {
-                var user = await _authService.Register(request);
+                var user = await authService.Register(request);
                 return Ok(user);
             }
             catch (ArgumentException e)
@@ -34,18 +27,18 @@ namespace SinaiAPI.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDTO request)
         {
-            var result = await _authService.Login(request);
+            var result = await authService.Login(request);
 
-            if (result == null)
+            if (result != null)
             {
-                return Unauthorized(new { error = "Invalid username or password" });
+                return Ok(new
+                {
+                    result.Value.token,
+                    result.Value.user
+                });
             }
 
-            return Ok(new 
-            { 
-                token = result.Value.token, 
-                user = result.Value.user
-            });
+            return Unauthorized(new { error = "Invalid username or password" });
         }
     }
 }

@@ -9,64 +9,57 @@ namespace SinaiAPI.Controllers
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [ApiController]
     [Route("api/[controller]")]
-    public class DepartmentController : BaseController
+    public class DepartmentController(DepartmentService departmentService, UserService userService) : BaseController(userService)
     {
-        private readonly DepartmentService _departmentService;
-
-        public DepartmentController(DepartmentService departmentService, UserService userService) : base(userService)
-        {
-            _departmentService = departmentService;
-        }
-
         [HttpGet]
         public IActionResult Get() 
         {
-            var departments = _departmentService.GetDepartments();
+            var departments = departmentService.GetDepartments();
             return departments == null ? NotFound() : Ok(departments);
         }
 
         [HttpGet("{id}")]
         public IActionResult GetId(int id)
         {
-            var department = _departmentService.GetDepartment(id);
+            var department = departmentService.GetDepartment(id);
             return department == null ? NotFound() : Ok(department);
         }
 
         [HttpPost("post")]
         public IActionResult Post([FromBody] Department department)
         {
-            if (department == null) 
-            { 
-                return BadRequest();
+            if (department != null)
+            {
+                departmentService.PostDepartment(department);
+                return Ok();
             }
 
-            _departmentService.PostDepartment(department);
-            return Ok();
+            return BadRequest();
         }
 
         [HttpDelete("delete/{id}")]
         public IActionResult Delete(int id)
-        { 
-            bool isDeleted = _departmentService.DeleteDepartment(id);
+        {
+            bool isDeleted = departmentService.DeleteDepartment(id);
 
-            if (!isDeleted) 
+            if (isDeleted)
             {
-                return NotFound($"Department with ID {id} not found.");
+                return NoContent();
             }
 
-            return NoContent();
+            return NotFound($"Department with ID {id} not found.");
         }
 
         [HttpPut("put/{id}")]
         public IActionResult Update(int id, [FromBody] Department department)
         {
-            if (department == null)
+            if (department != null)
             {
-                return BadRequest();
+                departmentService.UpdateDepartment(id, department);
+                return Ok(department);
             }
 
-            _departmentService.UpdateDepartment(id, department);
-            return Ok(department);
+            return BadRequest();
         }
     }
 }

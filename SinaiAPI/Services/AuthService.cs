@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using SinaiAPI.Data;
 using SinaiAPI.DTOs;
 using SinaiAPI.Models;
 using System.IdentityModel.Tokens.Jwt;
@@ -8,20 +9,11 @@ using System.Text;
 
 namespace SinaiAPI.Services
 {
-    public class AuthService
+    public class AuthService(SinaiDbContext context, IConfiguration configuration)
     {
-        private readonly SinaiDbContext _context;
-        private readonly IConfiguration _configuration;
-
-        public AuthService(SinaiDbContext context, IConfiguration configuration)
-        {
-            _context = context;
-            _configuration = configuration;
-        }
-
         public async Task<bool> EmailExists(string email)
         {
-            return await _context.Users.AnyAsync(x => x.Email == email);
+            return await context.Users.AnyAsync(x => x.Email == email);
         }
 
         public async Task<User?> Register(RegisterDTO request)
@@ -41,15 +33,15 @@ namespace SinaiAPI.Services
                 Role = User.RoleType.User
             };
 
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
+            context.Users.Add(user);
+            await context.SaveChangesAsync();
 
             return user;
         }
 
         public async Task<(string token, object user)?> Login(LoginDTO request)
         {
-            var user = await _context.Users.SingleOrDefaultAsync(x => x.Username == request.Username);
+            var user = await context.Users.SingleOrDefaultAsync(x => x.Username == request.Username);
 
             if (user == null || !BCrypt.Net.BCrypt.Verify(request.Password, user.Password))
             {
@@ -63,7 +55,7 @@ namespace SinaiAPI.Services
 
         private string GenerateJwtToken(User user)
         {
-            var key = Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!);
+            var key = Encoding.UTF8.GetBytes(configuration["Jwt:Key"]!);
             var tokenHandler = new JwtSecurityTokenHandler();
 
             var tokenDescriptor = new SecurityTokenDescriptor

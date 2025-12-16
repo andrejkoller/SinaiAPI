@@ -1,73 +1,61 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using SinaiAPI.Data;
 using SinaiAPI.Models;
 
 namespace SinaiAPI.Services
 {
-    public class DepartmentService
+    public class DepartmentService(SinaiDbContext context)
     {
-        private readonly SinaiDbContext _context;
-
-        public DepartmentService(SinaiDbContext context)
-        {
-            _context = context;
-        }
-
         public IQueryable<Department> GetDepartments()
         {
-            return _context.Departments;
+            return context.Departments;
         }
 
         public Department? GetDepartment(int id)
         {
-            return _context.Departments
+            return context.Departments
                 .Include(d => d.Workplaces)
                 .SingleOrDefault(x => x.Id == id);
         }
 
         public void PostDepartment(Department department)
         {
-            if (department == null)
+            if (department != null)
+            {
+                var departmentModel = new Department
+                {
+                    Floor = department.Floor,
+                    Name = department.Name,
+                    Amount = department.Amount,
+                    Description = department.Description,
+                    Status = department.Status,
+                    Active = department.Active,
+                };
+
+                context.Add(departmentModel);
+                context.SaveChanges();
+            }
+            else
             {
                 throw new ArgumentNullException(nameof(department));
             }
-
-            var departmentModel = new Department 
-            {
-                Floor = department.Floor,
-                Name = department.Name,
-                Amount = department.Amount,
-                Description = department.Description,
-                Status = department.Status,
-                Active = department.Active,
-            };
-
-            _context.Add(departmentModel);
-            _context.SaveChanges();
         }
 
         public bool DeleteDepartment(int id)
         {
-            var department = _context.Departments.SingleOrDefault(x => x.Id == id);
+            var department = context.Departments.SingleOrDefault(x => x.Id == id)
+                ?? throw new KeyNotFoundException("Department not found");
 
-            if (department == null)
-            {
-                throw new KeyNotFoundException("Department not found");
-            }
-
-            _context.Remove(department);
-            _context.SaveChanges();
+            context.Remove(department);
+            context.SaveChanges();
 
             return true;
         }
 
         public void UpdateDepartment(int id, Department updateDepartment)
         {
-            var department = _context.Departments.SingleOrDefault(x => x.Id == id);
-
-            if (department == null)
-            {
-                throw new KeyNotFoundException($"Department with ID {id} not found.");
-            }
+            var department = context.Departments.SingleOrDefault(x => x.Id == id)
+                ?? throw new KeyNotFoundException($"Department with ID {id} not found.");
 
             department.Floor = updateDepartment.Floor;
             department.Name = updateDepartment.Name;
@@ -76,7 +64,7 @@ namespace SinaiAPI.Services
             department.Status = updateDepartment.Status;
             department.Active = updateDepartment.Active;
 
-            _context.SaveChanges();
+            context.SaveChanges();
         }
     }
 }
